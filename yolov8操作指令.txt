@@ -1,0 +1,8 @@
+pip install yolo -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install ultralytics -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+conda remove -n yolov80424 --all
+conda create -n yolov8 python==3.11
+pip install ultralytics.models.yolo -i https://pypi.tuna.tsinghua.edu.cn/simple
+conda create --prefix D:\path\to\myenv python=3.6
+conda install pytorch==2.5.1 torchvision==0.20.1 torchaudio==2.5.1 pytorch-cuda=12.1 -c pytorch -c nvidia

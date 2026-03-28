@@ -1,0 +1,11 @@
+pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install yolo -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install ultralytics -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install dateutil -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install cycler -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install pytz -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install matplotlib>=3.3.0 numpy>=1.22.2 -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install python-dateutil -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install kiwisolver -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+https://blog.csdn.net/weixin_62375676/article/details/143494190?spm=1001.2101.3001.6650.6&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-6-143494190-blog-134068734.235%5Ev43%5Epc_blog_bottom_relevance_base7&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-6-143494190-blog-134068734.235%5Ev43%5Epc_blog_bottom_relevance_base7
