@@ -60,6 +60,7 @@ class RTDETRPredictor(BasePredictor):
             if self.args.classes is not None:
                 idx = (cls == torch.tensor(self.args.classes, device=cls.device)).any(1) & idx
             pred = torch.cat([bbox, score, cls], dim=-1)[idx]  # filter
+            pred = self._filter_wool_priors(pred)
             orig_img = orig_imgs[i]
             oh, ow = orig_img.shape[:2]
             pred[..., [0, 2]] *= ow
@@ -67,6 +68,30 @@ class RTDETRPredictor(BasePredictor):
             img_path = self.batch[0][i]
             results.append(Results(orig_img, path=img_path, names=self.model.names, boxes=pred))
         return results
+
+    @staticmethod
+    def _aspect_ratio_xyxy(xyxy):
+        """max(w,h)/min(w,h) for each box, shape (N,)."""
+        w = xyxy[:, 2] - xyxy[:, 0]
+        h = xyxy[:, 3] - xyxy[:, 1]
+        w = w.clamp(min=1e-6)
+        h = h.clamp(min=1e-6)
+        return torch.max(w / h, h / w)
+
+    def _filter_wool_priors(self, pred):
+        """Optional size / aspect-ratio prior filter for wool (normalized xyxy in [0,1])."""
+        if pred.shape[0] == 0 or not getattr(self.args, 'wool_prior_filter', False):
+            return pred
+        w = (pred[:, 2] - pred[:, 0]).clamp(min=1e-6)
+        h = (pred[:, 3] - pred[:, 1]).clamp(min=1e-6)
+        area = w * h
+        ar = self._aspect_ratio_xyxy(pred[:, :4])
+        min_a = float(self.args.wool_min_area_ratio)
+        max_a = float(self.args.wool_max_area_ratio)
+        min_ar = float(self.args.wool_min_aspect_ratio)
+        max_ar = float(self.args.wool_max_aspect_ratio)
+        keep = (area >= min_a) & (area <= max_a) & (ar >= min_ar) & (ar <= max_ar)
+        return pred[keep]
 
     def pre_transform(self, im):
         """

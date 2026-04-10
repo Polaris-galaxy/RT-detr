@@ -1,0 +1,58 @@
+# 羊毛场景专项 RT-DETR（在 DRBC 骨干上强化混合编码器）
+# 说明：Paddle 版 PP-HGNetV2-B4 / MobileNetV4-CONV 与本 Ultralytics 分叉模块名不一致；
+# GPU 端可继续用本 DRBC+ResNet 式堆叠；若需更强 COCO 预训练对齐，可改用同目录 r50.yaml 再加载相近结构权重。
+
+nc: 80
+scales:
+  l: [1.00, 1.00, 1024]
+
+# Varifocal + GIoU + L1；bbox 过小会导致框学不动（默认 bbox=5），小目标更依赖准确定位
+detr_loss_gain:
+  class: 1
+  bbox: 5
+  giou: 2.5
+  no_object: 0.1
+  mask: 1
+  dice: 1
+
+backbone:
+  - [-1, 1, ConvNormLayer, [32, 3, 2, None, False, 'relu']]
+  - [-1, 1, ConvNormLayer, [32, 3, 1, None, False, 'relu']]
+  - [-1, 1, ConvNormLayer, [64, 3, 1, None, False, 'relu']]
+  - [-1, 1, nn.MaxPool2d, [3, 2, 1]]
+  - [-1, 1, Blocks, [64, BasicBlock, 2, 2, 'relu']]
+  - [-1, 1, Blocks, [128, BasicBlock, 2, 3, 'relu']]
+  - [-1, 1, Blocks, [256, BasicBlock, 2, 4, 'relu']]
+  - [-1, 1, Blocks, [512, BasicBlock, 2, 5, 'relu']]
+
+head:
+  # P5 投影 + 4 层 AIFI + Conv（已去掉 SimAM，与 DRBC 一致的可加 SimAM 位置见注释）
+  - [-1, 1, Conv, [256, 1, 1, None, 1, 1, False]]
+  - [-1, 1, AIFI, [1024, 8]]
+  - [-1, 1, AIFI, [1024, 8]]
+  - [-1, 1, AIFI, [1024, 8]]
+  - [-1, 1, AIFI, [1024, 8]]
+  - [-1, 1, Conv, [256, 1, 1]]
+
+  - [-1, 1, nn.Upsample, [None, 2, 'nearest']]
+  - [6, 1, Conv, [256, 1, 1, None, 1, 1, False]]
+  - [[-2, -1], 1, Concat, [1]]
+  - [-1, 3, DRBC3, [256, 0.5]]
+  - [-1, 1, Conv, [256, 1, 1]]
+
+  - [-1, 1, nn.Upsample, [None, 2, 'nearest']]
+  - [5, 1, Conv, [256, 1, 1, None, 1, 1, False]]
+  - [[-2, -1], 1, Concat, [1]]
+  - [-1, 3, DRBC3, [256, 0.5]]
+
+  # PAN 下采样：用 SPDConv 代替 stride=2 的 Conv（空间减半由 space-to-depth 完成，这里 stride 用 1）
+  - [-1, 1, SPDConv, [256, 3, 1]]
+  - [[-1, 18], 1, Concat, [1]]
+  - [-1, 3, DRBC3, [256, 0.5]]
+
+  - [-1, 1, SPDConv, [256, 3, 1]]
+  - [[-1, 13], 1, Concat, [1]]
+  - [-1, 3, DRBC3, [256, 0.5]]
+
+  # 三路输出层号：去掉 SimAM 后整体 -1（相对原先 23,26,29）
+  - [[22, 25, 28], 1, RTDETRDecoder, [nc, 256, 300, 4, 8, 3]]

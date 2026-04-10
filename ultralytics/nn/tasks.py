@@ -443,7 +443,17 @@ class RTDETRDetectionModel(DetectionModel):
         """Initialize the loss criterion for the RTDETRDetectionModel."""
         from ultralytics.models.utils.loss import RTDETRDetectionLoss
 
-        return RTDETRDetectionLoss(nc=self.nc, use_vfl=True, use_sl=False, use_emasl=False, use_svfl=False, use_emasvfl=False)
+        default_gain = {'class': 1, 'bbox': 5, 'giou': 2, 'no_object': 0.1, 'mask': 1, 'dice': 1}
+        yaml_gain = self.yaml.get('detr_loss_gain')
+        if yaml_gain:
+            default_gain = {**default_gain, **yaml_gain}
+        return RTDETRDetectionLoss(nc=self.nc,
+                                   use_vfl=True,
+                                   use_sl=False,
+                                   use_emasl=False,
+                                   use_svfl=False,
+                                   use_emasvfl=False,
+                                   loss_gain=default_gain)
 
     def loss(self, batch, preds=None):
         """
@@ -614,27 +624,28 @@ def torch_safe_load(weight):
     def safe_torch_load(file_path, **kwargs):
         """安全的torch.load包装器"""
         import torch
-        
-        # 尝试添加所有可能的ultralytics自定义类到安全名单
+
+        # add_safe_globals 仅在较新 PyTorch（约 2.6+）存在；2.0 等版本会 AttributeError，需跳过
+        _add_safe = getattr(torch.serialization, 'add_safe_globals', None)
+        if callable(_add_safe):
+            try:
+                from ultralytics.nn.tasks import RTDETRDetectionModel
+                _add_safe([RTDETRDetectionModel])
+            except ImportError:
+                pass
+            try:
+                from ultralytics.nn.tasks import DetectionModel, SegmentationModel, ClassificationModel
+                _add_safe([DetectionModel, SegmentationModel, ClassificationModel])
+            except ImportError:
+                pass
+
+        # weights_only 老版本 torch.load 可能不接受该关键字
         try:
-            # 添加RT-DETR相关类
-            from ultralytics.nn.tasks import RTDETRDetectionModel
-            torch.serialization.add_safe_globals([RTDETRDetectionModel])
-        except ImportError:
-            pass
-        
-        try:
-            # 添加其他可能需要的ultralytics类
-            from ultralytics.nn.tasks import DetectionModel, SegmentationModel, ClassificationModel
-            torch.serialization.add_safe_globals([
-                DetectionModel, SegmentationModel, ClassificationModel
-            ])
-        except ImportError:
-            pass
-        
-        # 设置weights_only为False以确保兼容性
-        kwargs['weights_only'] = False
-        return torch.load(file_path, **kwargs)
+            kwargs['weights_only'] = False
+            return torch.load(file_path, **kwargs)
+        except TypeError:
+            kwargs.pop('weights_only', None)
+            return torch.load(file_path, **kwargs)
     # ===================================
     
     try:
@@ -792,8 +803,9 @@ def parse_model(d, ch, verbose=True, warehouse_manager=None):  # model_dict, inp
                  C3_PKIModule, C2f_PKIModule, C3_FADC, C2f_FADC, C3_PPA, C2f_PPA, SRFD, DRFD, RGCSPELAN, C3_Faster_CGLU, C2f_Faster_CGLU,
                  C3_Star, C2f_Star, C3_Star_CAA, C2f_Star_CAA, C3_KAN, C2f_KAN, KANC3, C3_DEConv, C2f_DEConv, C3_SMPCGLU, C2f_SMPCGLU,
                  C3_Heat, C2f_Heat, CSP_PTB, SimpleStem, VisionClueMerge, VSSBlock_YOLO, XSSBlock, GLSA, WTConv2d, C2f_FMB, gConvC3, C2f_gConv,
-                 LDConv,  SimAM):
-            if args[0] == 'head_channel':
+                 LDConv):
+            # SimAM 不得在此元组中：其 YAML 可用空参数 []，此处会访问 args[0] 触发 IndexError；SimAM 走下方 SimAM/SpatialGroupEnhance 分支
+            if len(args) and args[0] == 'head_channel':
                 args[0] = d[args[0]]
             c1, c2 = ch[f], args[0]
             if c2 != nc:  # if c2 not equal to number of classes (i.e. for Classify() output)

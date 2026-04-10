@@ -109,6 +109,13 @@ mosaic: 0.0  # (float) image mosaic (probability)
 mixup: 0.0  # (float) image mixup (probability)
 copy_paste: 0.0  # (float) segment copy-paste (probability)
 
+# RT-DETR / wool optional box priors (predict); area ratios are in normalized 0–1 box space (before resize to orig)
+wool_prior_filter: False  # (bool) filter predictions by area & aspect ratio (wool-like priors)
+wool_min_area_ratio: 0.0001  # (float) min box area as fraction of image (xyxy in 0–1)
+wool_max_area_ratio: 0.95  # (float) max box area fraction
+wool_min_aspect_ratio: 1.0  # (float) min max(w,h)/min(w,h), use 1.0 to only cap upper bound
+wool_max_aspect_ratio: 18.0  # (float) reject extreme sliver false positives
+
 # Custom config.yaml ---------------------------------------------------------------------------------------------------
 cfg:  # (str, optional) for overriding defaults.yaml
 
