@@ -125,4 +125,16 @@
 
 ---
 
+## 7. 后续更新（见主文档第 9 节）
+
+**`RT-DETR训练与结构改动说明.md` → 第 9 节「2026-04 优化批次」** 汇总了：
+
+- `train_optimized.py` 三模式（scratch / finetune / resume）、新默认超参与新实验名；
+- `wool_rtdetr.yaml`：`nc=1`、AIFI 与 RTDETRDecoder 的 dropout 等；
+- `track.py` 默认使用 `best.pt`。
+
+网络结构有改动时，请优先阅读该节关于 **checkpoint 与 yaml 一致性** 的说明。
+
+---
+
 *文档生成目的：集中记录羊毛专项配置与代码改动，非产品对外文档。*

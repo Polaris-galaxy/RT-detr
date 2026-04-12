@@ -4,8 +4,8 @@
 #val: datasets # val images (relative to 'path') 458 images
 #test: val/images # test images (optional) 937 images
 # Windows 路径用正斜杠或双反斜杠；勿写 r"..."（那是 Python 语法，不是合法 YAML）
-train: D:\Galaxy\其他\桌面\wool_sam2_v1_aug\train\images
-val: D:\Galaxy\其他\桌面\wool_sam2_v1_aug\val\images
+train: D:\Galaxy\其他\桌面\git data\wool_sam2_v1_aug\train\images
+val: D:\Galaxy\其他\桌面\git data\wool_sam2_v1_aug\val\images
 
 nc: 1 # 20288 of 40670 images, submit to https://competitions.codalab.org/competitions/20794
 

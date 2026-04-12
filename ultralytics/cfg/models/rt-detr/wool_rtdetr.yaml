@@ -2,7 +2,8 @@
 # 说明：Paddle 版 PP-HGNetV2-B4 / MobileNetV4-CONV 与本 Ultralytics 分叉模块名不一致；
 # GPU 端可继续用本 DRBC+ResNet 式堆叠；若需更强 COCO 预训练对齐，可改用同目录 r50.yaml 再加载相近结构权重。
 
-nc: 80
+# 与 demo.yaml 中 nc 保持一致（单类羊毛为 1）
+nc: 1
 scales:
   l: [1.00, 1.00, 1024]
 
@@ -28,10 +29,11 @@ backbone:
 head:
   # P5 投影 + 4 层 AIFI + Conv（已去掉 SimAM，与 DRBC 一致的可加 SimAM 位置见注释）
   - [-1, 1, Conv, [256, 1, 1, None, 1, 1, False]]
-  - [-1, 1, AIFI, [1024, 8]]
-  - [-1, 1, AIFI, [1024, 8]]
-  - [-1, 1, AIFI, [1024, 8]]
-  - [-1, 1, AIFI, [1024, 8]]
+  # AIFI：第三项为 encoder dropout，略增正则抑制过拟合（旧权重需重训或 strict=False 部分加载）
+  - [-1, 1, AIFI, [1024, 8, 0.05]]
+  - [-1, 1, AIFI, [1024, 8, 0.05]]
+  - [-1, 1, AIFI, [1024, 8, 0.05]]
+  - [-1, 1, AIFI, [1024, 8, 0.05]]
   - [-1, 1, Conv, [256, 1, 1]]
 
   - [-1, 1, nn.Upsample, [None, 2, 'nearest']]
@@ -55,4 +57,5 @@ head:
   - [-1, 3, DRBC3, [256, 0.5]]
 
   # 三路输出层号：去掉 SimAM 后整体 -1（相对原先 23,26,29）
-  - [[22, 25, 28], 1, RTDETRDecoder, [nc, 256, 300, 4, 8, 3]]
+  # RTDETRDecoder: hd, nq, ndp, nh, ndl, d_ffn, eval_idx, dropout（结构变更后旧 ckpt 无法整网加载）
+  - [[22, 25, 28], 1, RTDETRDecoder, [nc, 256, 300, 4, 8, 3, 1024, -1, 0.05]]

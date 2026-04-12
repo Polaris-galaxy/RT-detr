@@ -128,4 +128,44 @@
 
 ---
 
+## 9. 2026-04 优化批次（超参 / Transformer / 网络）
+
+本节记录一次集中改动：**训练脚本默认策略**、**`wool_rtdetr.yaml` 中编码器与解码器正则**，以及 **`track.py` 默认权重**。便于复现实验与对照旧 `runs/train/wool_small_obj`。
+
+### 9.1 `train_optimized.py`
+
+| 项目 | 说明 |
+|------|------|
+| `TRAIN_MODE` | `scratch`：yaml + `rtdetr-l.pt`；`finetune`：加载 `weights/best.pt` 或 `last.pt` 且 `resume=False`，新优化器与新实验目录；`resume`：完整续训（含优化器） |
+| `EXPERIMENT_NAME` | 默认 `wool_small_obj_v2`，避免与旧实验**共用同一份 `results.csv` 追加混淆** |
+| `CHECKPOINT_DIR` / `WEIGHT_NAME` | 指定从哪次实验、哪种权重启动 |
+| `LR0_FINETUNE` | `1e-4`，在已有好权重附近**降低步长**，减轻后期指标崩坏 |
+| `LRF` | `0.001`（原为 `0.01`），余弦末端更细 |
+| `WEIGHT_DECAY` | `1e-3`（原为 `5e-4`） |
+| `LABEL_SMOOTHING` | `0.05` |
+| `EPOCHS` / `PATIENCE` | `120` / `18`，缩短长训、收紧早停 |
+| `MOSAIC` / `CLOSE_MOSAIC` | `0.15` / `10`，弱 mosaic，末段关闭 |
+| `AMP` | 默认 `True`；若 loss 不稳定可改 `False` |
+
+### 9.2 `wool_rtdetr.yaml`（网络 / Transformer）
+
+| 项目 | 说明 |
+|------|------|
+| `nc` | 改为 **1**，与 `demo.yaml` 单类羊毛一致（避免与数据配置混淆） |
+| `AIFI`（4 层） | 参数由 `[1024, 8]` 改为 **`[1024, 8, 0.05]`**，为编码侧 **dropout=0.05** |
+| `RTDETRDecoder` | 在原有 `hd,nq,ndp,nh,ndl` 后增加 **`d_ffn=1024`、`eval_idx=-1`、`dropout=0.05`**，解码器正则略增 |
+
+**重要**：从已有 `.pt` **finetune/resume** 时，**网络结构以 checkpoint 为准**，不会自动套用当前 yaml 的新 dropout；要使新结构生效，请使用 **`TRAIN_MODE='scratch'`**，或自行实现 yaml 构建 + `load(ckpt, strict=False)` 迁移。
+
+### 9.3 `track.py`
+
+- 默认权重由 `last.pt` 改为 **`best.pt`**，并加注释说明二者差异。
+
+### 9.4 与旧权重的兼容性
+
+- 本次 **yaml 中 AIFI / RTDETRDecoder 参数表变更** 后，**旧 `best.pt` / `last.pt` 无法保证整网 `state_dict` 键完全一致**；若加载报错，请用 `scratch` 重训或部分加载迁移。
+- 仅 **`train_optimized.py` 超参** 变更、不改 yaml 时，旧 checkpoint 仍可 **`finetune` / `resume`**（结构未变的前提下）。
+
+---
+
 *文档随仓库当前状态整理；若你修改了 yaml 层号或脚本默认值，请同步更新本节对应描述。*

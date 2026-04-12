@@ -85,7 +85,7 @@ def main():
     p.add_argument(
         "csv",
         nargs="?",
-        default=r"runs\train\wool_optimized4\results.csv",
+        default=r"D:\Galaxy\其他\桌面\RT-detr\runs\train\wool_small_obj\results.csv",
         help="path to results.csv",
     )
     p.add_argument(
