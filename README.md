@@ -1,290 +1,199 @@
-<div align="center">
-  <p>
-    <a href="https://yolovision.ultralytics.com/" target="_blank">
-      <img width="100%" src="https://raw.githubusercontent.com/ultralytics/assets/main/im/banner-yolo-vision-2023.png"></a>
-  </p>
+# RT-DETR（Ultralytics 分叉）
 
-[English](README.md) | [简体中文](README.zh-CN.md)
-<br>
+本仓库在 [Ultralytics](https://github.com/ultralytics/ultralytics) 基础上集成 **RT-DETR** 实时检测器，并针对 **羊毛等小目标场景** 增加了专用模型配置与推理后处理。根目录提供训练、检测、数据准备与可视化脚本；核心库代码位于 `ultralytics/`。
 
-<div>
-    <a href="https://github.com/ultralytics/ultralytics/actions/workflows/ci.yaml"><img src="https://github.com/ultralytics/ultralytics/actions/workflows/ci.yaml/badge.svg" alt="Ultralytics CI"></a>
-    <a href="https://codecov.io/github/ultralytics/ultralytics"><img src="https://codecov.io/github/ultralytics/ultralytics/branch/main/graph/badge.svg?token=HHW7IIVFVY" alt="Ultralytics Code Coverage"></a>
-    <a href="https://zenodo.org/badge/latestdoi/264818686"><img src="https://zenodo.org/badge/264818686.svg" alt="YOLOv8 Citation"></a>
-    <a href="https://hub.docker.com/r/ultralytics/ultralytics"><img src="https://img.shields.io/docker/pulls/ultralytics/ultralytics?logo=docker" alt="Docker Pulls"></a>
-    <br>
-    <a href="https://console.paperspace.com/github/ultralytics/ultralytics"><img src="https://assets.paperspace.io/img/gradient-badge.svg" alt="Run on Gradient"/></a>
-    <a href="https://colab.research.google.com/github/ultralytics/ultralytics/blob/main/examples/tutorial.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a>
-    <a href="https://www.kaggle.com/ultralytics/yolov8"><img src="https://kaggle.com/static/images/open-in-kaggle.svg" alt="Open In Kaggle"></a>
-  </div>
-  <br>
+---
 
-[Ultralytics](https://ultralytics.com) [YOLOv8](https://github.com/ultralytics/ultralytics) is a cutting-edge, state-of-the-art (SOTA) model that builds upon the success of previous YOLO versions and introduces new features and improvements to further boost performance and flexibility. YOLOv8 is designed to be fast, accurate, and easy to use, making it an excellent choice for a wide range of object detection and tracking, instance segmentation, image classification and pose estimation tasks.
+## 环境与安装
 
-We hope that the resources here will help you get the most out of YOLOv8. Please browse the YOLOv8 <a href="https://docs.ultralytics.com/">Docs</a> for details, raise an issue on <a href="https://github.com/ultralytics/ultralytics/issues/new/choose">GitHub</a> for support, and join our <a href="https://ultralytics.com/discord">Discord</a> community for questions and discussions!
-
-To request an Enterprise License please complete the form at [Ultralytics Licensing](https://ultralytics.com/license).
-
-<img width="100%" src="https://raw.githubusercontent.com/ultralytics/assets/main/yolov8/yolo-comparison-plots.png"></a>
-
-<div align="center">
-  <a href="https://github.com/ultralytics" style="text-decoration:none;">
-    <img src="https://github.com/ultralytics/assets/raw/main/social/logo-social-github.png" width="2%" alt="" /></a>
-  <img src="https://github.com/ultralytics/assets/raw/main/social/logo-transparent.png" width="2%" alt="" />
-  <a href="https://www.linkedin.com/company/ultralytics/" style="text-decoration:none;">
-    <img src="https://github.com/ultralytics/assets/raw/main/social/logo-social-linkedin.png" width="2%" alt="" /></a>
-  <img src="https://github.com/ultralytics/assets/raw/main/social/logo-transparent.png" width="2%" alt="" />
-  <a href="https://twitter.com/ultralytics" style="text-decoration:none;">
-    <img src="https://github.com/ultralytics/assets/raw/main/social/logo-social-twitter.png" width="2%" alt="" /></a>
-  <img src="https://github.com/ultralytics/assets/raw/main/social/logo-transparent.png" width="2%" alt="" />
-  <a href="https://youtube.com/ultralytics" style="text-decoration:none;">
-    <img src="https://github.com/ultralytics/assets/raw/main/social/logo-social-youtube.png" width="2%" alt="" /></a>
-  <img src="https://github.com/ultralytics/assets/raw/main/social/logo-transparent.png" width="2%" alt="" />
-  <a href="https://www.tiktok.com/@ultralytics" style="text-decoration:none;">
-    <img src="https://github.com/ultralytics/assets/raw/main/social/logo-social-tiktok.png" width="2%" alt="" /></a>
-  <img src="https://github.com/ultralytics/assets/raw/main/social/logo-transparent.png" width="2%" alt="" />
-  <a href="https://www.instagram.com/ultralytics/" style="text-decoration:none;">
-    <img src="https://github.com/ultralytics/assets/raw/main/social/logo-social-instagram.png" width="2%" alt="" /></a>
-  <img src="https://github.com/ultralytics/assets/raw/main/social/logo-transparent.png" width="2%" alt="" />
-  <a href="https://ultralytics.com/discord" style="text-decoration:none;">
-    <img src="https://github.com/ultralytics/assets/blob/main/social/logo-social-discord.png" width="2%" alt="" /></a>
-</div>
-</div>
-
-## <div align="center">Documentation</div>
-
-See below for a quickstart installation and usage example, and see the [YOLOv8 Docs](https://docs.ultralytics.com) for full documentation on training, validation, prediction and deployment.
-
-<details open>
-<summary>Install</summary>
-
-Pip install the ultralytics package including all [requirements](https://github.com/ultralytics/ultralytics/blob/main/requirements.txt) in a [**Python>=3.8**](https://www.python.org/) environment with [**PyTorch>=1.8**](https://pytorch.org/get-started/locally/).
-
-[![PyPI version](https://badge.fury.io/py/ultralytics.svg)](https://badge.fury.io/py/ultralytics) [![Downloads](https://static.pepy.tech/badge/ultralytics)](https://pepy.tech/project/ultralytics)
+1. **Python**：建议 3.8+（与 `setup.py` 一致）。
+2. **PyTorch / torchvision**：按本机 CUDA 版本从 [PyTorch 官网](https://pytorch.org/) 安装（`requirements.txt` 中 `torch` 被注释，需自行安装）。
+3. **安装本仓库为可编辑包**（推荐在项目根目录执行）：
 
 ```bash
-pip install ultralytics
+pip install -e .
 ```
 
-For alternative installation methods including [Conda](https://anaconda.org/conda-forge/ultralytics), [Docker](https://hub.docker.com/r/ultralytics/ultralytics), and Git, please refer to the [Quickstart Guide](https://docs.ultralytics.com/quickstart).
+4. **依赖**：`pip install -r requirements.txt`  
+   其中包含 Ultralytics 基础依赖，以及 `nn/extra_modules` 中部分模块所需的 `efficientnet-pytorch`、`einops`、`timm`、`dill`、`PyWavelets` 等。
 
-</details>
+5. **按需额外安装**（根目录脚本会用到）：
+   - `split_data.py`：`scikit-learn`（`train_test_split`）
+   - `heatmap.py`：`pytorch-grad-cam`、`matplotlib`
+   - `csv_to_result_png.py`：`pandas`（若未通过其他方式安装）
+   - `test_env.py`：可选 CUDA 扩展（`mmcv`、`mamba_ssm`、`DCNv3`、`DCNv4` 等），用于验证环境是否编译成功，**非日常训练必需**
 
-<details open>
-<summary>Usage</summary>
+---
 
-#### CLI
+## 仓库结构（摘要）
 
-YOLOv8 may be used directly in the Command Line Interface (CLI) with a `yolo` command:
+| 路径 | 说明 |
+|------|------|
+| `ultralytics/` | 核心库：数据、`RTDETR` 模型、训练/验证/推理、大量骨干与 `extra_modules` 扩展 |
+| `ultralytics/cfg/models/rt-detr/` | RT-DETR 结构 YAML，含本项目的 `wool_rtdetr.yaml` |
+| `ultralytics/models/rtdetr/` | RT-DETR 的 `Model` / `Predictor` / `Trainer` / `Validator` |
+| `ultralytics/nn/AddModules/SPDConv.py` | **SPDConv**：Space-to-Depth + 卷积，用于 PAN 下采样（见下文） |
+| `demo.yaml` | 数据集配置示例（`train`/`val` 路径、`nc`、`names`） |
+| 根目录 `*.py` | 见下文「根目录脚本说明」 |
+
+`ultralytics/nn/backbone/`、`ultralytics/nn/extra_modules/` 等目录体量较大，包含多种可选骨干与算子（含部分需本地编译的 CUDA 扩展）；仅在对应 YAML 引用到相关模块时才需要编译或安装对应依赖。
+
+---
+
+## 配套数据增强：Polaris Data Albumentations
+
+训练与推理在本仓库完成；离线扩增与标注处理使用独立仓库 **[Polaris_Data_Albumentations](https://github.com/Polaris-galaxy/Polaris_Data_Albumentations.git)**。数据流为：在增强仓库生成或整理 **YOLO / COCO** 数据 → 将本仓库 `demo.yaml` 中 `train` / `val` 指向对应目录 → 在本仓库执行训练。
+
+**Polaris_Data_Albumentations** 使用 **Albumentations** 等依赖，功能概览如下。
+
+| 类别 | 内容 |
+|------|------|
+| 通用图片增强 | 两阶段流水线：第一阶段以颜色、几何拉伸、噪声为主；第二阶段以环境、光照为主；可按强度、目标倍数等参数批量生成图像。 |
+| YOLO 数据集增强 | 对 **YOLO 格式** 做单图增强（几何 / 颜色 / 噪声）、**Mosaic**、**MixUp**，并同步改写标注；含分步入口脚本与 matplotlib 抽查脚本，用于核对框与类别。 |
+| 标注与格式 | 训练前图与标签检查、按目标张数扩增、目录诊断、标注可视化；**YOLO → COCO** 转换；**COCO JSON 内图片路径** 在 Linux 服务器上的修正脚本。 |
+
+脚本文件名含 `_中文说明` 后缀时，终端中须使用 **完整文件名**。参数与入口以对方仓库 [README](https://github.com/Polaris-galaxy/Polaris_Data_Albumentations/blob/main/README.md) 为准。
+
+**仓库地址**：<https://github.com/Polaris-galaxy/Polaris_Data_Albumentations.git>
+
+---
+
+## SPDConv 模块（Space-to-Depth 下采样）
+
+羊毛专用结构中，**PAN 下采样** 使用 **SPDConv** 替代常见的 **stride=2 卷积**：下采样时先保留更多空间信息再融合，相对 stride=2 卷积直接抽像素，更利于 **细长 / 小目标**（如羊毛条）特征传递。
+
+### 代码位置与注册
+
+- **实现**：`ultralytics/nn/AddModules/SPDConv.py`，类名 `SPDConv`。
+- **导出**：`ultralytics/nn/AddModules/__init__.py` 中导出；`ultralytics/nn/tasks.py` 通过 `from .AddModules import *` 将 `SPDConv` 注册进解析表，YAML 里可直接写 `SPDConv`。
+
+### 前向计算步骤
+
+1. **`_space_to_depth`**：将特征图按 2×2 邻域拆成四张子图（`::2` / `1::2` 步长组合），在 **通道维拼接**，等价于 **空间高宽各减半、通道×4**（Space-to-Depth）。高或宽为奇数时先对右下 **pad 1**，保证四张子图尺寸一致。
+2. **卷积**：`__init__` 将输入通道按 `c1 * 4` 接入 `Conv2d`，后接 `BatchNorm2d` 与默认 **SiLU**；**`stride` 固定为 1**，空间尺度减半由 Space-to-Depth 完成，不由 stride=2 卷积完成。
+
+与 stride=2 卷积下采样相比：本模块先把四邻域信息压入通道再卷积融合，属于 SPD / Space-to-Depth 类常见做法，利于保留细粒度结构。
+
+### `wool_rtdetr.yaml` 中的配置
+
+PAN 中有 **两处** `SPDConv`，注释写明用于下采样并与上一路特征拼接：
+
+```yaml
+# PAN 下采样：用 SPDConv 代替 stride=2 的 Conv（空间减半由 space-to-depth 完成，这里 stride 用 1）
+- [-1, 1, SPDConv, [256, 3, 1]]
+```
+
+YAML 中参数 **`[256, 3, 1]`** 对应构造函数 `(c1, c2, k, s)`：**输出通道 256、卷积核 3、stride=1**（空间步进已由 Space-to-Depth 完成）。`c1` 由上一层输出通道自动推断。
+
+### 部署与融合
+
+类中提供 `forward_fuse`：仅 `Conv+激活`（无 BN），便于与 Ultralytics 常规的 `fuse()` 流程一起做推理融合。
+
+---
+
+## 相对上游 Ultralytics 的改动
+
+### 1. 羊毛场景结构 `wool_rtdetr.yaml`
+
+- 路径：`ultralytics/cfg/models/rt-detr/wool_rtdetr.yaml`
+- 内容：DRBC 风格骨干与混合编码器上的 RT-DETR 头（多层 `AIFI`、`DRBC3`、**PAN 侧 SPDConv**、`RTDETRDecoder` 等），`detr_loss_gain`（如 bbox/GIoU 权重）已按 **单类羊毛（`nc: 1`）** 与 YAML 内注释调整。SPDConv 行为见上一节。
+- 权重：与官方 `rtdetr-l` 等结构不一致，整网 **strict** 加载常失败；需按本 YAML 训练或做部分加载。
+
+### 2. 推理阶段「羊毛先验」框过滤
+
+- 实现：`ultralytics/models/rtdetr/predict.py` 中 `RTDETRPredictor.postprocess` 在置信度过滤后调用 `_filter_wool_priors`。
+- 行为：在 **归一化 xyxy（0–1）** 下按框 **面积占图比例** 与 **长宽比**（`max(w,h)/min(w,h)`）滤除检测结果，用于压制与先验尺度、长宽比不符的框。
+- 配置项：`ultralytics/cfg/default.yaml` 中：
+  - `wool_prior_filter`：总开关（默认 `False`）
+  - `wool_min_area_ratio` / `wool_max_area_ratio`
+  - `wool_min_aspect_ratio` / `wool_max_aspect_ratio`  
+  也可在 `model.predict(...)` 中传同名参数覆盖（见 `detect.py` 示例）。
+
+### 3. 数据集与训练入口
+
+- `demo.yaml`：`train` / `val` 图片路径、`nc`、`names`；使用前改为本地路径。
+- `train_optimized.py`：从 `wool_rtdetr.yaml` 与 `rtdetr-l.pt` 启动训练，或在 `RESUME = True` 时从 `runs/.../last.pt` 续训；数据配置默认指向 `demo.yaml`，可在脚本内常量中修改。
+
+### 4. 训练曲线 `csv_to_result_png.py`
+
+- Ultralytics 默认 `plot_results` 按 YOLO 列名解析 `results.csv`，与 RT-DETR 导出的列名不一致。
+- 本脚本直接读取 RT-DETR 的 `results.csv`，绘制 GIoU/cls/L1、precision、recall、mAP 等曲线，输出 `result.png`。
+
+---
+
+## 根目录脚本说明
+
+| 脚本 | 作用 |
+|------|------|
+| `train_optimized.py` | 使用 `MODEL_YAML`、`PRETRAINED`、`demo.yaml` 训练；支持 `RESUME` 与 `LAST_PT` 指向含 `last.pt` 的目录或文件 |
+| `detect.py` | 加载权重对 `testset` 推理，`save=True`，并开启 `wool_prior_filter` 等参数；首张结果另存为项目根目录 `result.png` |
+| `main_profile.py` | 对指定 YAML 构建模型，`info`、`profile`、`fuse`，用于参数量与速度分析 |
+| `get_FPS.py` | 加载 `.pt` 或 YAML，warmup 后统计批量推理延迟与 FPS（支持 `--half`） |
+| `split_data.py` | 将平铺的 YOLO 格式 `images`/`labels` 按比例划分为 `train/val/test`（需 `scikit-learn`）；路径在 `__main__` 中硬编码，使用前请修改 |
+| `xml_to_txt.py` | VOC XML 转 YOLO txt；需修改 `classes` 与 `xml_folder`/`output_folder`；含个别类名纠错（如 `buning`→`burning`） |
+| `csv_to_result_png.py` | `results.csv` → `result.png`（RT-DETR 列） |
+| `heatmap.py` | 基于 Grad-CAM 类方法生成热力图（需 `pytorch-grad-cam` 等） |
+| `track.py` | 使用 `RTDETR` 对视频做跟踪（`model.track`） |
+| `test_env.py` | 探测可选第三方 CUDA 扩展是否可导入，用于环境自检 |
+
+---
+
+## 使用方法速查
+
+### 训练
+
+先修改 `demo.yaml` 中的数据路径与类别，再执行：
 
 ```bash
-yolo predict model=yolov8n.pt source='https://ultralytics.com/images/bus.jpg'
+python train_optimized.py
 ```
 
-`yolo` can be used for a variety of tasks and modes and accepts additional arguments, i.e. `imgsz=640`. See the YOLOv8 [CLI Docs](https://docs.ultralytics.com/usage/cli) for examples.
-
-#### Python
-
-YOLOv8 may also be used directly in a Python environment, and accepts the same [arguments](https://docs.ultralytics.com/usage/cfg/) as in the CLI example above:
+或在 Python 中：
 
 ```python
-from ultralytics import YOLO
-
-# Load a model
-model = YOLO("yolov8n.yaml")  # build a new model from scratch
-model = YOLO("yolov8n.pt")  # load a pretrained model (recommended for training)
-
-# Use the model
-model.train(data="coco128.yaml", epochs=3)  # train the model
-metrics = model.val()  # evaluate model performance on the validation set
-results = model("https://ultralytics.com/images/bus.jpg")  # predict on an image
-path = model.export(format="onnx")  # export the model to ONNX format
+from ultralytics import RTDETR
+model = RTDETR("ultralytics/cfg/models/rt-detr/wool_rtdetr.yaml")
+model.load("rtdetr-l.pt")  # 或官方预训练权重路径
+model.train(data="demo.yaml", epochs=100, imgsz=640, batch=4)
 ```
 
-[Models](https://github.com/ultralytics/ultralytics/tree/main/ultralytics/cfg/models) download automatically from the latest Ultralytics [release](https://github.com/ultralytics/assets/releases). See YOLOv8 [Python Docs](https://docs.ultralytics.com/usage/python) for more examples.
+### 推理 / 验证
 
-</details>
+```bash
+python detect.py
+```
 
-## <div align="center">Models</div>
+或使用 CLI（安装包后）：
 
-YOLOv8 [Detect](https://docs.ultralytics.com/tasks/detect), [Segment](https://docs.ultralytics.com/tasks/segment) and [Pose](https://docs.ultralytics.com/tasks/pose) models pretrained on the [COCO](https://docs.ultralytics.com/datasets/detect/coco) dataset are available here, as well as YOLOv8 [Classify](https://docs.ultralytics.com/tasks/classify) models pretrained on the [ImageNet](https://docs.ultralytics.com/datasets/classify/imagenet) dataset. [Track](https://docs.ultralytics.com/modes/track) mode is available for all Detect, Segment and Pose models.
+```bash
+yolo detect model=路径/best.pt source=图片或文件夹 conf=0.25
+```
 
-<img width="1024" src="https://raw.githubusercontent.com/ultralytics/assets/main/im/banner-tasks.png" alt="Ultralytics YOLO supported tasks">
+`detect.py` 中使用的先验过滤参数示例如下（数值需按数据分布调整）：
 
-All [Models](https://github.com/ultralytics/ultralytics/tree/main/ultralytics/cfg/models) download automatically from the latest Ultralytics [release](https://github.com/ultralytics/assets/releases) on first use.
+```python
+model.predict(
+    source="testset",
+    wool_prior_filter=True,
+    wool_min_area_ratio=0.0001,
+    wool_max_area_ratio=0.92,
+    wool_min_aspect_ratio=1.0,
+    wool_max_aspect_ratio=15.0,
+)
+```
 
-<details open><summary>Detection (COCO)</summary>
+### 训练曲线图
 
-See [Detection Docs](https://docs.ultralytics.com/tasks/detect/) for usage examples with these models trained on [COCO](https://docs.ultralytics.com/datasets/detect/coco/), which include 80 pre-trained classes.
+```bash
+python csv_to_result_png.py path/to/results.csv -o path/to/result.png
+```
 
-| Model                                                                                | size<br><sup>(pixels) | mAP<sup>val<br>50-95 | Speed<br><sup>CPU ONNX<br>(ms) | Speed<br><sup>A100 TensorRT<br>(ms) | params<br><sup>(M) | FLOPs<br><sup>(B) |
-| ------------------------------------------------------------------------------------ | --------------------- | -------------------- | ------------------------------ | ----------------------------------- | ------------------ | ----------------- |
-| [YOLOv8n](https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8n.pt) | 640                   | 37.3                 | 80.4                           | 0.99                                | 3.2                | 8.7               |
-| [YOLOv8s](https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8s.pt) | 640                   | 44.9                 | 128.4                          | 1.20                                | 11.2               | 28.6              |
-| [YOLOv8m](https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8m.pt) | 640                   | 50.2                 | 234.7                          | 1.83                                | 25.9               | 78.9              |
-| [YOLOv8l](https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8l.pt) | 640                   | 52.9                 | 375.2                          | 2.39                                | 43.7               | 165.2             |
-| [YOLOv8x](https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8x.pt) | 640                   | 53.9                 | 479.1                          | 3.53                                | 68.2               | 257.8             |
+### 官方 RT-DETR 论文
 
-- **mAP<sup>val</sup>** values are for single-model single-scale on [COCO val2017](http://cocodataset.org) dataset.
-  <br>Reproduce by `yolo val detect data=coco.yaml device=0`
-- **Speed** averaged over COCO val images using an [Amazon EC2 P4d](https://aws.amazon.com/ec2/instance-types/p4/) instance.
-  <br>Reproduce by `yolo val detect data=coco.yaml batch=1 device=0|cpu`
+[RT-DETR: DETRs Beat YOLOs on Real-time Object Detection](https://arxiv.org/pdf/2304.08069.pdf)
 
-</details>
+---
 
-<details><summary>Detection (Open Image V7)</summary>
+## 许可
 
-See [Detection Docs](https://docs.ultralytics.com/tasks/detect/) for usage examples with these models trained on [Open Image V7](https://docs.ultralytics.com/datasets/detect/open-images-v7/), which include 600 pre-trained classes.
-
-| Model                                                                                     | size<br><sup>(pixels) | mAP<sup>val<br>50-95 | Speed<br><sup>CPU ONNX<br>(ms) | Speed<br><sup>A100 TensorRT<br>(ms) | params<br><sup>(M) | FLOPs<br><sup>(B) |
-| ----------------------------------------------------------------------------------------- | --------------------- | -------------------- | ------------------------------ | ----------------------------------- | ------------------ | ----------------- |
-| [YOLOv8n](https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8n-oiv7.pt) | 640                   | 18.4                 | 142.4                          | 1.21                                | 3.5                | 10.5              |
-| [YOLOv8s](https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8s-oiv7.pt) | 640                   | 27.7                 | 183.1                          | 1.40                                | 11.4               | 29.7              |
-| [YOLOv8m](https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8m-oiv7.pt) | 640                   | 33.6                 | 408.5                          | 2.26                                | 26.2               | 80.6              |
-| [YOLOv8l](https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8l-oiv7.pt) | 640                   | 34.9                 | 596.9                          | 2.43                                | 44.1               | 167.4             |
-| [YOLOv8x](https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8x-oiv7.pt) | 640                   | 36.3                 | 860.6                          | 3.56                                | 68.7               | 260.6             |
-
-- **mAP<sup>val</sup>** values are for single-model single-scale on [Open Image V7](https://docs.ultralytics.com/datasets/detect/open-images-v7/) dataset.
-  <br>Reproduce by `yolo val detect data=open-images-v7.yaml device=0`
-- **Speed** averaged over COCO val images using an [Amazon EC2 P4d](https://aws.amazon.com/ec2/instance-types/p4/) instance.
-  <br>Reproduce by `yolo val detect data=open-images-v7.yaml batch=1 device=0|cpu`
-
-</details>
-
-<details><summary>Segmentation (COCO)</summary>
-
-See [Segmentation Docs](https://docs.ultralytics.com/tasks/segment/) for usage examples with these models trained on [COCO-Seg](https://docs.ultralytics.com/datasets/segment/coco/), which include 80 pre-trained classes.
-
-| Model                                                                                        | size<br><sup>(pixels) | mAP<sup>box<br>50-95 | mAP<sup>mask<br>50-95 | Speed<br><sup>CPU ONNX<br>(ms) | Speed<br><sup>A100 TensorRT<br>(ms) | params<br><sup>(M) | FLOPs<br><sup>(B) |
-| -------------------------------------------------------------------------------------------- | --------------------- | -------------------- | --------------------- | ------------------------------ | ----------------------------------- | ------------------ | ----------------- |
-| [YOLOv8n-seg](https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8n-seg.pt) | 640                   | 36.7                 | 30.5                  | 96.1                           | 1.21                                | 3.4                | 12.6              |
-| [YOLOv8s-seg](https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8s-seg.pt) | 640                   | 44.6                 | 36.8                  | 155.7                          | 1.47                                | 11.8               | 42.6              |
-| [YOLOv8m-seg](https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8m-seg.pt) | 640                   | 49.9                 | 40.8                  | 317.0                          | 2.18                                | 27.3               | 110.2             |
-| [YOLOv8l-seg](https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8l-seg.pt) | 640                   | 52.3                 | 42.6                  | 572.4                          | 2.79                                | 46.0               | 220.5             |
-| [YOLOv8x-seg](https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8x-seg.pt) | 640                   | 53.4                 | 43.4                  | 712.1                          | 4.02                                | 71.8               | 344.1             |
-
-- **mAP<sup>val</sup>** values are for single-model single-scale on [COCO val2017](http://cocodataset.org) dataset.
-  <br>Reproduce by `yolo val segment data=coco-seg.yaml device=0`
-- **Speed** averaged over COCO val images using an [Amazon EC2 P4d](https://aws.amazon.com/ec2/instance-types/p4/) instance.
-  <br>Reproduce by `yolo val segment data=coco-seg.yaml batch=1 device=0|cpu`
-
-</details>
-
-<details><summary>Pose (COCO)</summary>
-
-See [Pose Docs](https://docs.ultralytics.com/tasks/pose/) for usage examples with these models trained on [COCO-Pose](https://docs.ultralytics.com/datasets/pose/coco/), which include 1 pre-trained class, person.
-
-| Model                                                                                                | size<br><sup>(pixels) | mAP<sup>pose<br>50-95 | mAP<sup>pose<br>50 | Speed<br><sup>CPU ONNX<br>(ms) | Speed<br><sup>A100 TensorRT<br>(ms) | params<br><sup>(M) | FLOPs<br><sup>(B) |
-| ---------------------------------------------------------------------------------------------------- | --------------------- | --------------------- | ------------------ | ------------------------------ | ----------------------------------- | ------------------ | ----------------- |
-| [YOLOv8n-pose](https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8n-pose.pt)       | 640                   | 50.4                  | 80.1               | 131.8                          | 1.18                                | 3.3                | 9.2               |
-| [YOLOv8s-pose](https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8s-pose.pt)       | 640                   | 60.0                  | 86.2               | 233.2                          | 1.42                                | 11.6               | 30.2              |
-| [YOLOv8m-pose](https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8m-pose.pt)       | 640                   | 65.0                  | 88.8               | 456.3                          | 2.00                                | 26.4               | 81.0              |
-| [YOLOv8l-pose](https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8l-pose.pt)       | 640                   | 67.6                  | 90.0               | 784.5                          | 2.59                                | 44.4               | 168.6             |
-| [YOLOv8x-pose](https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8x-pose.pt)       | 640                   | 69.2                  | 90.2               | 1607.1                         | 3.73                                | 69.4               | 263.2             |
-| [YOLOv8x-pose-p6](https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8x-pose-p6.pt) | 1280                  | 71.6                  | 91.2               | 4088.7                         | 10.04                               | 99.1               | 1066.4            |
-
-- **mAP<sup>val</sup>** values are for single-model single-scale on [COCO Keypoints val2017](http://cocodataset.org)
-  dataset.
-  <br>Reproduce by `yolo val pose data=coco-pose.yaml device=0`
-- **Speed** averaged over COCO val images using an [Amazon EC2 P4d](https://aws.amazon.com/ec2/instance-types/p4/) instance.
-  <br>Reproduce by `yolo val pose data=coco-pose.yaml batch=1 device=0|cpu`
-
-</details>
-
-<details><summary>Classification (ImageNet)</summary>
-
-See [Classification Docs](https://docs.ultralytics.com/tasks/classify/) for usage examples with these models trained on [ImageNet](https://docs.ultralytics.com/datasets/classify/imagenet/), which include 1000 pretrained classes.
-
-| Model                                                                                        | size<br><sup>(pixels) | acc<br><sup>top1 | acc<br><sup>top5 | Speed<br><sup>CPU ONNX<br>(ms) | Speed<br><sup>A100 TensorRT<br>(ms) | params<br><sup>(M) | FLOPs<br><sup>(B) at 640 |
-| -------------------------------------------------------------------------------------------- | --------------------- | ---------------- | ---------------- | ------------------------------ | ----------------------------------- | ------------------ | ------------------------ |
-| [YOLOv8n-cls](https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8n-cls.pt) | 224                   | 66.6             | 87.0             | 12.9                           | 0.31                                | 2.7                | 4.3                      |
-| [YOLOv8s-cls](https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8s-cls.pt) | 224                   | 72.3             | 91.1             | 23.4                           | 0.35                                | 6.4                | 13.5                     |
-| [YOLOv8m-cls](https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8m-cls.pt) | 224                   | 76.4             | 93.2             | 85.4                           | 0.62                                | 17.0               | 42.7                     |
-| [YOLOv8l-cls](https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8l-cls.pt) | 224                   | 78.0             | 94.1             | 163.0                          | 0.87                                | 37.5               | 99.7                     |
-| [YOLOv8x-cls](https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8x-cls.pt) | 224                   | 78.4             | 94.3             | 232.0                          | 1.01                                | 57.4               | 154.8                    |
-
-- **acc** values are model accuracies on the [ImageNet](https://www.image-net.org/) dataset validation set.
-  <br>Reproduce by `yolo val classify data=path/to/ImageNet device=0`
-- **Speed** averaged over ImageNet val images using an [Amazon EC2 P4d](https://aws.amazon.com/ec2/instance-types/p4/) instance.
-  <br>Reproduce by `yolo val classify data=path/to/ImageNet batch=1 device=0|cpu`
-
-</details>
-
-## <div align="center">Integrations</div>
-
-Our key integrations with leading AI platforms extend the functionality of Ultralytics' offerings, enhancing tasks like dataset labeling, training, visualization, and model management. Discover how Ultralytics, in collaboration with [Roboflow](https://roboflow.com/?ref=ultralytics), ClearML, [Comet](https://bit.ly/yolov8-readme-comet), Neural Magic and [OpenVINO](https://docs.ultralytics.com/integrations/openvino), can optimize your AI workflow.
-
-<br>
-<a href="https://bit.ly/ultralytics_hub" target="_blank">
-<img width="100%" src="https://github.com/ultralytics/assets/raw/main/yolov8/banner-integrations.png"></a>
-<br>
-<br>
-
-<div align="center">
-  <a href="https://roboflow.com/?ref=ultralytics">
-    <img src="https://github.com/ultralytics/assets/raw/main/partners/logo-roboflow.png" width="10%" /></a>
-  <img src="https://github.com/ultralytics/assets/raw/main/social/logo-transparent.png" width="15%" height="0" alt="" />
-  <a href="https://cutt.ly/yolov5-readme-clearml">
-    <img src="https://github.com/ultralytics/assets/raw/main/partners/logo-clearml.png" width="10%" /></a>
-  <img src="https://github.com/ultralytics/assets/raw/main/social/logo-transparent.png" width="15%" height="0" alt="" />
-  <a href="https://bit.ly/yolov8-readme-comet">
-    <img src="https://github.com/ultralytics/assets/raw/main/partners/logo-comet.png" width="10%" /></a>
-  <img src="https://github.com/ultralytics/assets/raw/main/social/logo-transparent.png" width="15%" height="0" alt="" />
-  <a href="https://bit.ly/yolov5-neuralmagic">
-    <img src="https://github.com/ultralytics/assets/raw/main/partners/logo-neuralmagic.png" width="10%" /></a>
-</div>
-
-|                                                           Roboflow                                                           |                                                            ClearML ⭐ NEW                                                            |                                                                        Comet ⭐ NEW                                                                        |                                           Neural Magic ⭐ NEW                                           |
-| :--------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------: |
-| Label and export your custom datasets directly to YOLOv8 for training with [Roboflow](https://roboflow.com/?ref=ultralytics) | Automatically track, visualize and even remotely train YOLOv8 using [ClearML](https://cutt.ly/yolov5-readme-clearml) (open-source!) | Free forever, [Comet](https://bit.ly/yolov8-readme-comet) lets you save YOLOv8 models, resume training, and interactively visualize and debug predictions | Run YOLOv8 inference up to 6x faster with [Neural Magic DeepSparse](https://bit.ly/yolov5-neuralmagic) |
-
-## <div align="center">Ultralytics HUB</div>
-
-Experience seamless AI with [Ultralytics HUB](https://bit.ly/ultralytics_hub) ⭐, the all-in-one solution for data visualization, YOLOv5 and YOLOv8 🚀 model training and deployment, without any coding. Transform images into actionable insights and bring your AI visions to life with ease using our cutting-edge platform and user-friendly [Ultralytics App](https://ultralytics.com/app_install). Start your journey for **Free** now!
-
-<a href="https://bit.ly/ultralytics_hub" target="_blank">
-<img width="100%" src="https://github.com/ultralytics/assets/raw/main/im/ultralytics-hub.png" alt="Ultralytics HUB preview image"></a>
-
-## <div align="center">Contribute</div>
-
-We love your input! YOLOv5 and YOLOv8 would not be possible without help from our community. Please see our [Contributing Guide](https://docs.ultralytics.com/help/contributing) to get started, and fill out our [Survey](https://ultralytics.com/survey?utm_source=github&utm_medium=social&utm_campaign=Survey) to send us feedback on your experience. Thank you 🙏 to all our contributors!
-
-<!-- SVG image from https://opencollective.com/ultralytics/contributors.svg?width=990 -->
-
-<a href="https://github.com/ultralytics/yolov5/graphs/contributors">
-<img width="100%" src="https://github.com/ultralytics/assets/raw/main/im/image-contributors.png"></a>
-
-## <div align="center">License</div>
-
-Ultralytics offers two licensing options to accommodate diverse use cases:
-
-- **AGPL-3.0 License**: This [OSI-approved](https://opensource.org/licenses/) open-source license is ideal for students and enthusiasts, promoting open collaboration and knowledge sharing. See the [LICENSE](https://github.com/ultralytics/ultralytics/blob/main/LICENSE) file for more details.
-- **Enterprise License**: Designed for commercial use, this license permits seamless integration of Ultralytics software and AI models into commercial goods and services, bypassing the open-source requirements of AGPL-3.0. If your scenario involves embedding our solutions into a commercial offering, reach out through [Ultralytics Licensing](https://ultralytics.com/license).
-
-## <div align="center">Contact</div>
-
-For Ultralytics bug reports and feature requests please visit [GitHub Issues](https://github.com/ultralytics/ultralytics/issues), and join our [Discord](https://ultralytics.com/discord) community for questions and discussions!
-
-<br>
-<div align="center">
-  <a href="https://github.com/ultralytics" style="text-decoration:none;">
-    <img src="https://github.com/ultralytics/assets/raw/main/social/logo-social-github.png" width="3%" alt="" /></a>
-  <img src="https://github.com/ultralytics/assets/raw/main/social/logo-transparent.png" width="3%" alt="" />
-  <a href="https://www.linkedin.com/company/ultralytics/" style="text-decoration:none;">
-    <img src="https://github.com/ultralytics/assets/raw/main/social/logo-social-linkedin.png" width="3%" alt="" /></a>
-  <img src="https://github.com/ultralytics/assets/raw/main/social/logo-transparent.png" width="3%" alt="" />
-  <a href="https://twitter.com/ultralytics" style="text-decoration:none;">
-    <img src="https://github.com/ultralytics/assets/raw/main/social/logo-social-twitter.png" width="3%" alt="" /></a>
-  <img src="https://github.com/ultralytics/assets/raw/main/social/logo-transparent.png" width="3%" alt="" />
-  <a href="https://youtube.com/ultralytics" style="text-decoration:none;">
-    <img src="https://github.com/ultralytics/assets/raw/main/social/logo-social-youtube.png" width="3%" alt="" /></a>
-  <img src="https://github.com/ultralytics/assets/raw/main/social/logo-transparent.png" width="3%" alt="" />
-  <a href="https://www.tiktok.com/@ultralytics" style="text-decoration:none;">
-    <img src="https://github.com/ultralytics/assets/raw/main/social/logo-social-tiktok.png" width="3%" alt="" /></a>
-  <img src="https://github.com/ultralytics/assets/raw/main/social/logo-transparent.png" width="3%" alt="" />
-  <a href="https://www.instagram.com/ultralytics/" style="text-decoration:none;">
-    <img src="https://github.com/ultralytics/assets/raw/main/social/logo-social-instagram.png" width="3%" alt="" /></a>
-  <img src="https://github.com/ultralytics/assets/raw/main/social/logo-transparent.png" width="3%" alt="" />
-  <a href="https://ultralytics.com/discord" style="text-decoration:none;">
-    <img src="https://github.com/ultralytics/assets/blob/main/social/logo-social-discord.png" width="3%" alt="" /></a>
-</div>
+`ultralytics` 包默认遵循 **AGPL-3.0**（见 `setup.py`）。使用与分发时请遵守原项目及本仓库各子模块（如 CUTLASS、Mamba 等）的许可证要求。
