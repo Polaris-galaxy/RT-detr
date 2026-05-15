@@ -194,6 +194,16 @@ python csv_to_result_png.py path/to/results.csv -o path/to/result.png
 
 ---
 
+## 与 RBCV（区域覆盖 / 语义探索）联动
+
+若与 **RBCV-Region-Based-Coverage-Navigation-** 并行使用，请在 **`rbcv_ros/`** 目录查看：
+
+- **`README_RBCV.md`** — 需发布的话题、`static_extrinsic.example.yaml`、离线 bag 写 JSONL；
+- **`ros1_rtdetr_rbcv_publisher.py`** — 实时 ROS1 检测 → `/rbcv/semantic_detections`；
+- **`offline_bag_rtdetr_jsonl.py`** — 无 ROS master，仅从 bag 推理并输出与 RBCV `exploration` 兼容的 `detections.jsonl`。
+
+---
+
 ## 许可
 
 `ultralytics` 包默认遵循 **AGPL-3.0**（见 `setup.py`）。使用与分发时请遵守原项目及本仓库各子模块（如 CUTLASS、Mamba 等）的许可证要求。

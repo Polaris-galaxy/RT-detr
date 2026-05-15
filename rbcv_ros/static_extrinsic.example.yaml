@@ -1,0 +1,19 @@
+# RBCV / exploration 联用：静态外参与内参示例（map 地面 z=0）
+# 将 T_map_optical 换为你的标定 / TF 导出的 4x4（光学坐标系 -> map）
+# camera：与图像尺寸对应的 pinhole 内参
+
+camera:
+  fx: 525.0
+  fy: 525.0
+  cx: 320.0
+  cy: 240.0
+
+# 相机光学系在 TF 中的名称（仅作记录；离线脚本不使用）
+optical_frame: camera_color_optical_frame
+
+# 4x4 行优先：p_map = T_map_optical @ [x,y,z,1]^T
+T_map_optical:
+  - [1.0, 0.0, 0.0, 0.0]
+  - [0.0, 1.0, 0.0, 0.0]
+  - [0.0, 0.0, 1.0, 1.2]
+  - [0.0, 0.0, 0.0, 1.0]
